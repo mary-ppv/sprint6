@@ -81,7 +81,12 @@ func postTask(w http.ResponseWriter, r *http.Request) {
 
 	response, err := json.Marshal(task)
 	if err != nil {
-		http.Error(w, "Ошибка кодирования JSON", http.StatusInternalServerError)
+		http.Error(w, "Ошибка кодирования JSON", http.StatusBadRequest)
+		return
+	}
+
+	if _, ok := tasks[task.ID]; ok {
+		http.Error(w, "Задача с таким ID уже существует", http.StatusBadRequest)
 		return
 	}
 
@@ -98,7 +103,7 @@ func getTaskId(w http.ResponseWriter, r *http.Request) {
 
 	task, ok := tasks[id]
 	if !ok {
-		http.Error(w, "Задача не найдена", http.StatusNoContent)
+		http.Error(w, "Задача не найдена", http.StatusBadRequest)
 		return
 	}
 
